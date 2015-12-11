@@ -44,7 +44,7 @@ export function deserialize( shortcode ) {
 	const parsed = Shortcode.parse( shortcode );
 
 	if ( parsed ) {
-		return ( { attrs: { named: { to, subject } = {} } = {}, content } ) => {
+		return ( ( { attrs: { named: { to, subject } = {} } = {}, content } ) => {
 			let fields = [];
 			let field;
 
@@ -56,7 +56,7 @@ export function deserialize( shortcode ) {
 			}
 
 			return pickBy( { to, subject, fields }, identity );
-		}( parsed );
+		} )( parsed );
 	}
 
 	return {};
