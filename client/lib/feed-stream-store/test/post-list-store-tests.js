@@ -8,10 +8,9 @@ var expect = require( 'chai' ).expect,
 
 var PostListStore, FeedPostStore, FeedSubscriptionStore;
 
-describe( 'FeedPostList', function() {
+describe( 'FeedStreamStore', function() {
 	before( function() {
 		mockery.enable( {
-			useCleanCache: true,
 			warnOnUnregistered: false
 		} );
 		mockery.registerAllowable( '../feed-stream' );

@@ -20,7 +20,6 @@ describe( 'FeedStore', function() {
 
 	before( function() {
 		mockery.enable( {
-			useCleanCache: true,
 			warnOnUnregistered: false
 		} );
 		mockery.registerAllowable( [ '../', '../actions' ] );
