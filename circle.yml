@@ -3,3 +3,5 @@ machine:
     version: 4.3.0
   post:
     - npm install -g npm@3.x.x
+  environment:
+    NPM_CONFIG_PROGRESS: false
