@@ -3,7 +3,6 @@
  */
 import React from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
-import omit from 'lodash/omit';
 import debugFactory from 'debug';
 
 /**
@@ -14,28 +13,58 @@ import ThemeDetailsComponent from 'components/data/theme-details';
 import i18n from 'lib/mixins/i18n';
 import { getCurrentUser } from 'state/current-user/selectors';
 import { getThemeDetails } from 'state/themes/theme-details/selectors';
-import { setSection } from 'state/ui/actions';
 import ClientSideEffects from 'components/client-side-effects';
 import { receiveThemeDetails } from 'state/themes/actions';
 import wpcom from 'lib/wp';
 import config from 'config';
 import { decodeEntities } from 'lib/formatting';
+import ThemesHead from 'layout/head';
+import analytics from 'analytics';
+import { getAnalyticsData } from '../helpers';
 
 const debug = debugFactory( 'calypso:themes' );
 let themeDetailsCache = new Map();
 
-export function makeElement( ThemesComponent, Head, store, props ) {
-	return(
-		<ReduxProvider store={ store }>
-			<Head title={ props.title } tier={ props.tier || 'all' }>
-				<ThemesComponent { ...omit( props, [ 'title', 'runClientAnalytics' ] ) } />
+// This is generic -- nothing themes-specific in here!
+export function makeElement( Component, getProps, Head, sideEffects = function() {} ) {
+	return ( context, next ) => {
+		const boundSideEffects = sideEffects.bind( null, context );
+
+		context.primary = <ReduxProvider store={ context.store }>
+			<Head context={ context }>
+				<Component { ...getProps( context ) } />
 				<ClientSideEffects>
-					{ props.runClientAnalytics }
+					{ boundSideEffects }
 				</ClientSideEffects>
 			</Head>
-		</ReduxProvider>
-	);
+		</ReduxProvider>;
+		next();
+	}
 };
+
+function runClientAnalytics( context ) {
+	const { tier, site_id: siteId } = context.params;
+	const { basePath, analyticsPageTitle } = getAnalyticsData(
+		context.path,
+		tier,
+		siteId
+	);
+	analytics.pageView.record( basePath, analyticsPageTitle );
+};
+
+export const LoggedOutHead = ( { children, context: { store, params: { slug } } } ) => {
+	const themeName = ( getThemeDetails( store.getState(), slug ) || false ).name;
+	const title = i18n.translate( '%(theme)s Theme', {
+		args: { theme: themeName },
+		textOnly: true
+	} );
+
+	return (
+		<ThemesHead title={ decodeEntities( title ) + ' — WordPress.com' }>
+			{ children }
+		</ThemesHead>
+	);
+}; // TODO: Use lib/screen-title's buildTitle. Cf. https://github.com/Automattic/wp-calypso/issues/3796
 
 export function fetchThemeDetailsData( context, next ) {
 	if ( ! config.isEnabled( 'manage/themes/details' ) ) {
@@ -66,38 +95,27 @@ export function fetchThemeDetailsData( context, next ) {
 	} );
 } // TODO(ehg): We don't want to hit the endpoint for every req. Debounce based on theme arg?
 
-export function details( context, next ) {
-	const { slug } = context.params;
+function getDetailsProps( context ) {
+	const { slug, section } = context.params;
 	const user = getCurrentUser( context.store.getState() );
-	const themeName = ( getThemeDetails( context.store.getState(), slug ) || false ).name;
-	const title = i18n.translate( '%(theme)s Theme', {
-		args: { theme: themeName },
-		textOnly: true
-	} );
-	const Head = user
-		? require( 'layout/head' )
-		: require( 'my-sites/themes/head' );
 
-	const props = {
+	return {
 		themeSlug: slug,
-		contentSection: context.params.section,
-		title: decodeEntities( title ) + ' — WordPress.com', // TODO: Use lib/screen-title's buildTitle. Cf. https://github.com/Automattic/wp-calypso/issues/3796
+		contentSection: section,
 		isLoggedIn: !! user
 	};
-
-	context.store.dispatch( setSection( {
-		name: 'theme',
-		group: 'sites',
-		secondary: false,
-	} ) );
-
-	const ConnectedComponent = ( { themeSlug, contentSection } ) => (
-		<ThemeDetailsComponent id={ themeSlug } >
-			<ThemeSheetComponent section={ contentSection } />
-		</ThemeDetailsComponent>
-	);
-
-	context.primary = makeElement( ConnectedComponent, Head, context.store, props );
-	context.secondary = null; // When we're logged in, we need to remove the sidebar.
-	next();
 }
+
+const ConnectedComponent = ( { themeSlug, contentSection } ) => (
+	<ThemeDetailsComponent id={ themeSlug } >
+		<ThemeSheetComponent section={ contentSection } />
+	</ThemeDetailsComponent>
+);
+
+export const details = makeElement(
+	ConnectedComponent,
+	getDetailsProps,
+	LoggedOutHead, // TODO: logged-in ? LoggedInHead : LoggedOutHead
+	runClientAnalytics
+);
+// context.secondary = null; // FIXME!!!!
