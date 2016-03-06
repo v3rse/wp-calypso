@@ -108,7 +108,7 @@ var EditorPermalink = React.createClass( {
 		}
 
 		return (
-			<div className="editor-permalink" onMouseEnter={ this.showTooltip } onMouseLeave={ this.hideTooltip }>
+			<button className="editor-permalink" onMouseEnter={ this.showTooltip } onMouseLeave={ this.hideTooltip }>
 				<Gridicon
 					className="editor-permalink__toggle"
 					icon="link"
@@ -136,7 +136,7 @@ var EditorPermalink = React.createClass( {
 				>
 					{ tooltipMessage }
 				</Tooltip>
-			</div>
+			</button>
 		);
 	}
 } );
