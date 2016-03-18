@@ -4,6 +4,7 @@
 import filter from 'lodash/filter';
 import includes from 'lodash/includes';
 import sortBy from 'lodash/sortBy';
+import find from 'lodash/find';
 
 /**
  * Internal dependencies
@@ -35,3 +36,22 @@ export const getSubscribedLists = createSelector(
 		} ), 'slug' ),
 	( state ) => [ state.reader.lists.items ]
 );
+
+/**
+ * Returns a Reader list, given the owner and slug.
+ *
+ * @param  {Object}  state  Global state tree
+ * @param  {String}  owner  Owner username
+ * @param  {String}  slug   List slug
+ * @return {?Object}        Reader list
+ */
+export function getListByOwnerAndSlug( state, owner, slug ) {
+	const lists = state.reader.lists.items;
+	if ( ! lists ) {
+		return null;
+	}
+
+	return find( lists, ( list ) => {
+		return list.owner === owner && list.slug === slug;
+	} );
+}
