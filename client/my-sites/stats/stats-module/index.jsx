@@ -1,14 +1,14 @@
 /**
  * External dependencies
  */
-var React = require( 'react' ),
+const React = require( 'react' ),
 	page = require( 'page' ),
 	classNames = require( 'classnames' );
 
 /**
  * Internal dependencies
  */
-var toggle = require( '../mixin-toggle' ),
+const toggle = require( '../mixin-toggle' ),
 	skeleton = require( '../mixin-skeleton' ),
 	observe = require( 'lib/mixins/data-observe' ),
 	ErrorPanel = require( '../stats-error' ),
@@ -20,8 +20,9 @@ var toggle = require( '../mixin-toggle' ),
 	Card = require( 'components/card' ),
 	StatsModulePlaceholder = require( './placeholder' ),
 	Gridicon = require( 'components/gridicon' );
+import UpgradeNudge from 'my-sites/upgrade-nudge';
 
-module.exports = React.createClass( {
+export default React.createClass( {
 	displayName: 'StatModule',
 
 	mixins: [ toggle(), skeleton( 'data' ), observe( 'dataList' ) ],
@@ -103,6 +104,21 @@ module.exports = React.createClass( {
 			moduleHeaderTitle = <DatePicker period={ this.props.period.period } date={ this.props.period.startOf } summary={ true } />;
 		}
 
+		const footerInfo = [];
+		if ( this.props.summary && this.props.path === 'searchterms' ) {
+			footerInfo.push(
+				<div className="module-content-text" key="nudge">
+					<UpgradeNudge
+						title="Google Analytics is included in our Premium Plan"
+						message="Upgrade to Premium for Google Analytics integration, custom domain and other power features"
+						icon="stats"
+						event="googleAnalytics-stats-searchterms"
+					/>
+				</div>
+			);
+			footerInfo.push( <DownloadCsv key="csv" period={ this.props.period } path={ this.props.path } site={ this.props.site } dataList={ this.props.dataList } /> );
+		}
+
 		return (
 			<Card className={ classes }>
 				<div className={ this.props.className }>
@@ -120,9 +136,7 @@ module.exports = React.createClass( {
 						<StatsListLegend value={ this.props.moduleStrings.value } label={ this.props.moduleStrings.item } />
 						<StatsModulePlaceholder isLoading={ isLoading } />
 						{ statsList }
-						{ this.props.summary
-							? <DownloadCsv period={ this.props.period } path={ this.props.path } site={ this.props.site } dataList={ this.props.dataList } />
-						: null }
+						{ footerInfo }
 					</div>
 					{ viewSummary }
 				</div>
