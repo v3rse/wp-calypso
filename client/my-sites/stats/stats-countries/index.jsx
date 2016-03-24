@@ -1,13 +1,13 @@
 /**
  * External dependencies
  */
-var React = require( 'react' ),
+const React = require( 'react' ),
 	classNames = require( 'classnames' );
 
 /**
  * Internal dependencies
  */
-var toggle = require( '../mixin-toggle' ),
+const toggle = require( '../mixin-toggle' ),
 	Geochart = require( '../geochart' ),
 	StatsList = require( '../stats-list' ),
 	observe = require( 'lib/mixins/data-observe' ),
@@ -20,7 +20,7 @@ var toggle = require( '../mixin-toggle' ),
 	StatsListLegend = require( '../stats-list/legend' ),
 	Gridicon = require( 'components/gridicon' );
 
-module.exports = React.createClass( {
+export default React.createClass( {
 	displayName: 'StatCountries',
 
 	mixins: [ toggle( 'Countries' ), skeleton( 'data' ), observe( 'dataList' ) ],
