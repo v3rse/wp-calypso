@@ -114,4 +114,12 @@ module.exports = {
 		},
 		defaultVariation: 'original'
 	},
+	nudgeStatsGoogleAnalytics: {
+		datestamp: '20160320',
+		variations: {
+			no: 50,
+			countries: 50
+		},
+		defaultVariation: 'no'
+	}
 };

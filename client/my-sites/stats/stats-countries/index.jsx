@@ -20,6 +20,7 @@ const toggle = require( '../mixin-toggle' ),
 	StatsListLegend = require( '../stats-list/legend' ),
 	Gridicon = require( 'components/gridicon' );
 import UpgradeNudge from 'my-sites/upgrade-nudge';
+import { abtest } from 'lib/abtest';
 
 export default React.createClass( {
 	displayName: 'StatCountries',
@@ -109,16 +110,18 @@ export default React.createClass( {
 
 		const footerInfo = [];
 		if ( this.props.summary ) {
-			footerInfo.push(
-				<div className="module-content-text" key="nudge">
-					<UpgradeNudge
-						title="Google Analytics is included in our Premium Plan"
-						message="Upgrade to Premium for Google Analytics integration, custom domain and other power features"
-						event="googleAnalytics-stats-countries"
-						icon="stats"
-					/>
-				</div>
-			);
+			if ( abtest( 'nudgeStatsGoogleAnalytics' ) === 'countries' ) {
+				footerInfo.push(
+					<div className="module-content-text" key="nudge">
+						<UpgradeNudge
+							title="Google Analytics is included in our Premium Plan"
+							message="Upgrade to Premium for Google Analytics integration, custom domain and other power features"
+							icon="stats"
+							event="googleAnalytics-stats-countries"
+						/>
+					</div>
+				);
+			}
 			footerInfo.push( <DownloadCsv key="csv" period={ this.props.period } path={ this.props.path } site={ this.props.site } dataList={ this.props.dataList } /> );
 		}
 
