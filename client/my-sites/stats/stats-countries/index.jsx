@@ -19,6 +19,7 @@ const toggle = require( '../mixin-toggle' ),
 	StatsModulePlaceholder = require( '../stats-module/placeholder' ),
 	StatsListLegend = require( '../stats-list/legend' ),
 	Gridicon = require( 'components/gridicon' );
+import UpgradeNudge from 'my-sites/upgrade-nudge';
 
 export default React.createClass( {
 	displayName: 'StatCountries',
@@ -106,6 +107,21 @@ export default React.createClass( {
 
 		countries = <StatsList moduleName={ this.props.path } data={ data } />;
 
+		const footerInfo = [];
+		if ( this.props.summary ) {
+			footerInfo.push(
+				<div className="module-content-text" key="nudge">
+					<UpgradeNudge
+						title="Google Analytics is included in our Premium Plan"
+						message="Upgrade to Premium for Google Analytics integration, custom domain and other power features"
+						event="googleAnalytics-stats-countries"
+						icon="stats"
+					/>
+				</div>
+			);
+			footerInfo.push( <DownloadCsv key="csv" period={ this.props.period } path={ this.props.path } site={ this.props.site } dataList={ this.props.dataList } /> );
+		}
+
 		return (
 			<Card className={ classNames.apply( null, classes ) }>
 				<div className="countryviews">
@@ -134,9 +150,7 @@ export default React.createClass( {
 						<StatsListLegend value={ this.translate( 'Views' ) } label={ this.translate( 'Country' ) } />
 						<StatsModulePlaceholder isLoading={ isLoading } />
 						{ countries }
-						{ this.props.summary
-							? <DownloadCsv period={ this.props.period } path={ this.props.path } site={ this.props.site } dataList={ this.props.dataList } />
-							: null }
+						{ footerInfo }
 						{ hasError ? <ErrorPanel className={ 'network-error' } /> : null }
 					</div>
 					{ viewSummary }
