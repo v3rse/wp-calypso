@@ -13,6 +13,7 @@ const analytics = require( 'analytics' ),
 	MediaActions = require( 'lib/media/actions' ),
 	MediaUtils = require( 'lib/media/utils' );
 import uniq from 'lodash/uniq';
+import { VideoPressFileTypes } from 'lib/media/constants';
 
 module.exports = React.createClass( {
 	displayName: 'MediaLibraryUploadButton',
@@ -53,10 +54,9 @@ module.exports = React.createClass( {
 		if ( ! MediaUtils.isSiteAllowedFileTypesToBeTrusted( this.props.site ) ) {
 			return null;
 		}
-		const injectedMediaTypesForLaterUpgradeNudge = [ 'ogv', 'mp4', 'm4v', 'mov', 'wmv', 'avi', 'mpg', '3gp', '3g2' ];
 		const allowedFileTypesForSite = MediaUtils.getAllowedFileTypesForSite( this.props.site );
 
-		return uniq( allowedFileTypesForSite.concat( injectedMediaTypesForLaterUpgradeNudge ) ).map( ( type ) => `.${type}` ).join();
+		return uniq( allowedFileTypesForSite.concat( VideoPressFileTypes ) ).map( ( type ) => `.${type}` ).join();
 	},
 
 	render: function() {

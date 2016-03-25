@@ -10,11 +10,13 @@ import mapValues from 'lodash/mapValues';
 import groupBy from 'lodash/groupBy';
 import debounce from 'lodash/debounce';
 import debugFactory from 'debug';
+import merge from 'lodash/merge';
 
 /**
  * Internal dependencies
  */
 import Notice from 'components/notice';
+import NoticeAction from 'components/notice/notice-action';
 import MediaListData from 'components/data/media-list-data';
 import MediaLibrarySelectedData from 'components/data/media-library-selected-data';
 import MediaActions from 'lib/media/actions';
@@ -118,7 +120,27 @@ export default React.createClass( {
 				args: occurrences.length
 			};
 
+			if ( this.props.site ) {
+				onDismiss = MediaActions.clearValidationErrorsByType.bind( null, this.props.site.ID, errorType );
+			}
+
 			switch ( errorType ) {
+				case MediaValidationErrors.FILE_TYPE_NOT_IN_PLAN:
+					return (
+						<Notice status="is-warning" onDismissClick={ onDismiss }>
+							{
+								this.translate(
+									'Your site does not support video files. {{a}}Upgrade to Premium for video support{{/a}}.',
+									merge( i18nOptions, {
+										components: {
+											a: <a target="_blank" href={ '/plans/' + this.props.site.slug } />,
+										}
+									} )
+								)
+							}
+						</Notice>
+					);
+					break;
 				case MediaValidationErrors.FILE_TYPE_UNSUPPORTED:
 					message = this.translate(
 						'The file could not be uploaded because the file type is not supported.',
@@ -147,10 +169,6 @@ export default React.createClass( {
 						i18nOptions
 					);
 					break;
-			}
-
-			if ( this.props.site ) {
-				onDismiss = MediaActions.clearValidationErrorsByType.bind( null, this.props.site.ID, errorType );
 			}
 
 			return (

@@ -1,15 +1,15 @@
 /**
  * External dependencies
  */
-var mapValues = require( 'lodash/mapValues' ),
+const mapValues = require( 'lodash/mapValues' ),
 	without = require( 'lodash/without' ),
 	isEmpty = require( 'lodash/isEmpty' ),
 	pickBy = require( 'lodash/pickBy' );
-
+import get from 'lodash/get';
 /**
  * Internal dependencies
  */
-var Dispatcher = require( 'dispatcher' ),
+const Dispatcher = require( 'dispatcher' ),
 	emitter = require( 'lib/mixins/emitter' ),
 	sites = require( 'lib/sites-list' )(),
 	MediaUtils = require( './utils' ),
@@ -18,7 +18,7 @@ var Dispatcher = require( 'dispatcher' ),
 /**
  * Module variables
  */
-var MediaValidationStore = {},
+let MediaValidationStore = {},
 	_errors;
 
 /**
@@ -59,7 +59,11 @@ function validateItem( siteId, item ) {
 	}
 
 	if ( ! MediaUtils.isSupportedFileTypeForSite( item, site ) ) {
-		itemErrors.push( MediaValidationErrors.FILE_TYPE_UNSUPPORTED );
+		if ( get( site, 'plan.product_slug' ) === 'free_plan' && MediaUtils.isSupportedFileTypeInPremium( item, site ) ) {
+			itemErrors.push( MediaValidationErrors.FILE_TYPE_NOT_IN_PLAN );
+		} else {
+			itemErrors.push( MediaValidationErrors.FILE_TYPE_UNSUPPORTED );
+		}
 	}
 
 	if ( true === MediaUtils.isExceedingSiteMaxUploadSize( item.size, site ) ) {
