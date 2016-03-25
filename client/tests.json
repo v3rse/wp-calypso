@@ -280,6 +280,11 @@
 				"test": [ "posts" ]
 			}
 		},
+		"plugins": {
+			"plugins-list": {
+				"test": ["index"]
+			}
+		},
 		"upgrades": {
 			"cart": {
 				"test": [
