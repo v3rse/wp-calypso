@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-var ReactDom = require( 'react-dom' ),
+const ReactDom = require( 'react-dom' ),
 	React = require( 'react' ),
 	noop = require( 'lodash/noop' ),
 	classNames = require( 'classnames' );
@@ -9,9 +9,10 @@ var ReactDom = require( 'react-dom' ),
 /**
  * Internal dependencies
  */
-var analytics = require( 'analytics' ),
+const analytics = require( 'analytics' ),
 	MediaActions = require( 'lib/media/actions' ),
 	MediaUtils = require( 'lib/media/utils' );
+import uniq from 'lodash/uniq';
 
 module.exports = React.createClass( {
 	displayName: 'MediaLibraryUploadButton',
@@ -52,8 +53,10 @@ module.exports = React.createClass( {
 		if ( ! MediaUtils.isSiteAllowedFileTypesToBeTrusted( this.props.site ) ) {
 			return null;
 		}
+		const injectedMediaTypesForLaterUpgradeNudge = [ 'ogv', 'mp4', 'm4v', 'mov', 'wmv', 'avi', 'mpg', '3gp', '3g2' ];
+		const allowedFileTypesForSite = MediaUtils.getAllowedFileTypesForSite( this.props.site );
 
-		return MediaUtils.getAllowedFileTypesForSite( this.props.site ).map( ( type ) => `.${type}` ).join();
+		return uniq( allowedFileTypesForSite.concat( injectedMediaTypesForLaterUpgradeNudge ) ).map( ( type ) => `.${type}` ).join();
 	},
 
 	render: function() {
