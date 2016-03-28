@@ -2,8 +2,12 @@
  * External dependencies
  */
 import React from 'react';
-import classNames from 'classnames';
 import debugFactory from 'debug';
+
+/**
+ * Internal dependencies
+ */
+import Button from 'components/button';
 
 const debug = debugFactory( 'calypso:menus:revert-button' ); // eslint-disable-line no-unused-vars
 
@@ -36,18 +40,13 @@ const MenuRevertButton = React.createClass( {
 	},
 
 	render() {
-		const hasChanged = this.props.menuData.get().hasChanged,
-			classes = classNames( {
-				button: true,
-				'is-primary': true,
-			} );
+		const hasChanged = this.props.menuData.get().hasChanged;
 
 		return (
-			<button className={ classes }
-					disabled={ ! hasChanged }
+			<Button disabled={ ! hasChanged }
 					onClick={ this.revert }>
 				{ this.state.reverting ? this.translate( 'Canceling…' ) : this.translate( 'Cancel' ) }
-			</button>
+			</Button>
 		);
 	}
 } );
