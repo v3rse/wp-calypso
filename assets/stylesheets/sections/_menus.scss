@@ -194,10 +194,13 @@
 		span {
 			display: block;
 			float: left;
-			max-width: 90%; /* should be less to avoid a bug on touch + <a> tag that auto-closes the area, but ellipsis wouldn't work */
+			max-width: calc(100% - 20px); /* should be less to avoid a bug on touch + <a> tag that auto-closes the area, but ellipsis wouldn't work */
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
+			@include breakpoint( "<480px" ) {
+				width: 100%;
+			}
 		}
 
 		a {
@@ -207,6 +210,10 @@
 				@include noticon( '\f411', 16px );
 				color: darken( $gray, 10% );
 				vertical-align: baseline;
+			}
+
+			@include breakpoint( "<480px" ) {
+				display: none;
 			}
 		}
 	}
