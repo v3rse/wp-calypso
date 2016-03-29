@@ -388,6 +388,9 @@
 				"contact-form": {
 					"test": [ "actions", "reducer" ]
 				},
+				"last-draft": {
+					"test": [ "actions", "reducer", "selectors" ]
+				},
 				"test": [ "actions", "reducer", "selectors" ]
 			},
 			"reader": {
