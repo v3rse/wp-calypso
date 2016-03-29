@@ -3,7 +3,8 @@
  */
 import {
 	SELECTED_SITE_SET,
-	SET_SECTION
+	SET_SECTION,
+	SHOW_GUIDESTOUR,
 } from 'state/action-types';
 
 /**
@@ -40,4 +41,13 @@ export function setSection( section, options = {} ) {
 	}
 	options.hasSidebar = ( options.hasSidebar === false ) ? false : true;
 	return options;
+}
+
+export function showGuidesTour( { show = false, tour = 'main', siteId = null } ) {
+	return {
+		type: SHOW_GUIDESTOUR,
+		show,
+		tour,
+		siteId,
+	}
 }

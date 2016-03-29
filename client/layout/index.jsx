@@ -137,6 +137,7 @@ Layout = React.createClass( {
 	},
 
 	render: function() {
+		console.log( 'should show guides tour', this.props.shouldShowGuidesTour );
 		var sectionClass = classnames(
 				'wp',
 				'layout',
@@ -177,12 +178,13 @@ Layout = React.createClass( {
 
 export default connect(
 	( state ) => {
-		const { isLoading, section } = state.ui;
+		const { isLoading, section, guidesTour } = state.ui;
 		return {
 			isLoading,
 			isSupportUser: state.support.isSupportUser,
 			section,
-			isOffline: isOffline( state )
+			isOffline: isOffline( state ),
+			shouldShowGuidesTour: guidesTour.show,
 		};
 	}
 )( Layout );

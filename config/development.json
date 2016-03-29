@@ -33,6 +33,7 @@
 		"desktop-promo": true,
 		"devdocs": true,
 		"devdocs/redirect-loggedout-homepage": true,
+		"guidestours": true,
 		"help": true,
 		"jetpack/calypso-first-signup-flow": true,
 		"jetpack_core_inline_update": true,
