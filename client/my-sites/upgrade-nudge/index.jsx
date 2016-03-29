@@ -26,7 +26,14 @@ export default React.createClass( {
 		icon: React.PropTypes.string,
 		event: React.PropTypes.string,
 		href: React.PropTypes.string,
-		jetpack: React.PropTypes.bool
+		jetpack: React.PropTypes.bool,
+		feature: React.PropTypes.oneOf( [ 
+			false,
+			'google-analytics',
+			'domain',
+			'premium-theme',
+			'custom-css'
+		] ),
 	},
 
 	getDefaultProps() {
@@ -35,14 +42,16 @@ export default React.createClass( {
 			message: 'And get your own domain address.',
 			icon: 'star',
 			event: null,
-			jetpack: false
+			jetpack: false,
+			feature: false
 		}
 	},
 
 	handleClick() {
 		if ( this.props.event ) {
 			analytics.tracks.recordEvent( 'calypso_upgrade_nudge_cta_click', {
-				cta_name: this.props.event
+				cta_name: this.props.event,
+				cta_feature: this.props.feature
 			} );
 		}
 		this.props.onClick();
@@ -63,6 +72,10 @@ export default React.createClass( {
 
 		if ( ! this.props.href && site ) {
 			href = '/plans/' + site.slug;
+
+			if( this.props.feature ) {
+				href += '?feature=' + this.props.feature
+			}
 		}
 
 		return (
