@@ -82,6 +82,7 @@
 		"reader/recommendations": true,
 		"reader/share": true,
 		"reader/teams": true,
+		"resume-editing": true,
 		"rubberband-scroll-disable": false,
 		"server-side-rendering": true,
 		"settings/security/monitor": true,
