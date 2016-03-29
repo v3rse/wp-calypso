@@ -348,6 +348,14 @@ ul.module-header-actions {
 			}
 		}
 	}
+
+	&.nudge {
+		text-align: center;
+		a, button {
+			margin-left: auto;
+			margin-right: auto;
+		}
+	}
 }
 
 .stats-module.is-hidden {
