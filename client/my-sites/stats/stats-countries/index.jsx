@@ -115,6 +115,7 @@ export default React.createClass( {
 						title="Google Analytics is included in our Premium Plan"
 						message="Upgrade to Premium for Google Analytics integration, custom domain and other power features"
 						event="googleAnalytics-stats-countries"
+						feature="google-analytics"
 						icon="stats"
 					/>
 				</div>
