@@ -13,6 +13,7 @@ import {
 	getEditorLastDraftPostId
 } from 'state/ui/editor/last-draft/selectors';
 import { getEditorPath } from 'state/ui/editor/selectors';
+import { getSectionName } from 'state/ui/selectors';
 import { decodeEntities } from 'lib/formatting';
 import QueryPosts from 'components/data/query-posts';
 
@@ -24,8 +25,8 @@ const ResumeEditing = React.createClass( {
 	},
 
 	render: function() {
-		const { siteId, postId, draft, editPath } = this.props;
-		if ( ! draft ) {
+		const { siteId, postId, draft, editPath, section } = this.props;
+		if ( ! draft || 'post-editor' === section ) {
 			return null;
 		}
 
@@ -47,6 +48,7 @@ export default connect( ( state ) => {
 		siteId,
 		postId,
 		draft: getEditorLastDraftPost( state ),
-		editPath: getEditorPath( state, siteId, postId )
+		editPath: getEditorPath( state, siteId, postId ),
+		section: getSectionName( state )
 	};
 } )( ResumeEditing );
