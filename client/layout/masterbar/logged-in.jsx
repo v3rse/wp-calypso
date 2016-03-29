@@ -15,6 +15,7 @@ import Gravatar from 'components/gravatar';
 import layoutFocus from 'lib/layout-focus';
 import config from 'config';
 import { preload } from 'sections-preload';
+import ResumeEditing from 'my-sites/resume-editing';
 
 export default React.createClass( {
 	displayName: 'Masterbar',
@@ -75,6 +76,7 @@ export default React.createClass( {
 					}
 				</Stats>
 				<Item
+					className="masterbar__reader"
 					url="/"
 					icon="reader"
 					onClick={ this.clickReader }
@@ -84,6 +86,7 @@ export default React.createClass( {
 				>
 					{ this.translate( 'Reader', { comment: 'Toolbar, must be shorter than ~12 chars' } ) }
 				</Item>
+				<ResumeEditing />
 				<Publish
 					sites={ this.props.sites }
 					user={ this.props.user }
