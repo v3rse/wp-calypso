@@ -1,11 +1,13 @@
 /**
  * External dependencies
  */
-import React from 'react';
+import React, { PropTypes } from 'react';
+import PureRenderMixin from 'react-pure-render/mixin';
 import classnames from 'classnames';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import get from 'lodash/get';
+import noop from 'lodash/noop';
 import { translate } from 'lib/mixins/i18n';
 import page from 'page';
 
@@ -23,56 +25,81 @@ import DraftsButton from 'post-editor/drafts-button';
 import PostCountsData from 'components/data/post-counts-data';
 import QueryPostTypes from 'components/data/query-post-types';
 
-function EditorSidebarHeader( { typeSlug, type, siteId, showDrafts, toggleDrafts, allPostsUrl, toggleSidebar } ) {
-	const isCustomPostType = ( 'post' !== typeSlug && 'page' !== typeSlug );
-	const className = classnames( 'editor-sidebar__header', {
-		'is-drafts-visible': showDrafts,
-		'is-loading': isCustomPostType && ! type
-	} );
-	const closeLabel = translate( 'Back' );
-	const closeButtonAction = page.back.bind( page, allPostsUrl );
-	const closeButtonUrl = '';
-	const closeButtonAriaLabel = translate( 'Go back' );
+const EditorSidebarHeader = React.createClass( {
+	displayName: 'EditorSidebarHeader',
 
-	return (
-		<div className={ className }>
-			{ isCustomPostType && (
-				<QueryPostTypes siteId={ siteId } />
-			) }
-			{ showDrafts && (
+	mixins: [ PureRenderMixin ],
+
+	propTypes: {
+		typeSlug: PropTypes.string,
+		type: PropTypes.object,
+		siteId: PropTypes.number,
+		allPostsUrl: PropTypes.string,
+		showDrafts: PropTypes.bool,
+		toggleDrafts: PropTypes.func,
+		toggleSidebar: PropTypes.func
+	},
+
+	getDefaultProps() {
+		return {
+			showDrafts: false,
+			toggleDrafts: noop,
+			toggleSidebar: noop
+		};
+	},
+
+	render() {
+		const isCustomPostType = ( 'post' !== this.props.typeSlug && 'page' !== this.props.typeSlug );
+		const className = classnames( 'editor-sidebar__header', {
+			'is-drafts-visible': this.props.showDrafts,
+			'is-loading': isCustomPostType && ! this.props.type
+		} );
+		const closeLabel = translate( 'Back' );
+		const closeButtonAction = page.back.bind( page, this.props.allPostsUrl );
+		const closeButtonUrl = '';
+		const closeButtonAriaLabel = translate( 'Go back' );
+
+		return (
+			<div className={ className }>
+				{ isCustomPostType && (
+					<QueryPostTypes siteId={ this.props.siteId } />
+				) }
+				{ this.props.showDrafts && (
+					<Button
+						compact borderless
+						className="editor-sidebar__close"
+						onClick={ this.props.toggleDrafts }
+						aria-label={ translate( 'Close drafts list' ) }>
+						<Gridicon icon="cross" />
+						{ translate( 'Close' ) }
+					</Button>
+				) }
+				{ ! this.props.showDrafts && (
+					<Button
+						compact borderless
+						className="editor-sidebar__close"
+						href={ closeButtonUrl }
+						onClick={ closeButtonAction }
+						aria-label={ closeButtonAriaLabel }>
+						<Gridicon icon="arrow-left" size={ 18 } />
+						{ closeLabel }
+					</Button>
+				) }
+				{ this.props.typeSlug === 'post' && this.props.siteId && (
+					<PostCountsData siteId={ this.props.siteId } status="draft">
+						<DraftsButton onClick={ this.props.toggleDrafts } />
+					</PostCountsData>
+				) }
 				<Button
-					compact borderless
-					className="editor-sidebar__close"
-					onClick={ toggleDrafts }
-					aria-label={ translate( 'Close drafts list' ) }>
-					<Gridicon icon="cross" />
-					{ translate( 'Close' ) }
+					onClick={ this.props.toggleSidebar }
+					className="editor-sidebar__toggle-sidebar">
+					<span>{ translate( 'Write' ) }</span>
 				</Button>
-			) }
-			{ ! showDrafts && (
-				<Button
-					compact borderless
-					className="editor-sidebar__close"
-					href={ closeButtonUrl }
-					onClick={ closeButtonAction }
-					aria-label={ closeButtonAriaLabel }>
-					<Gridicon icon="arrow-left" size={ 18 } />
-					{ closeLabel }
-				</Button>
-			) }
-			{ typeSlug === 'post' && siteId && (
-				<PostCountsData siteId={ siteId } status="draft">
-					<DraftsButton onClick={ toggleDrafts } />
-				</PostCountsData>
-			) }
-			<Button
-				onClick={ toggleSidebar }
-				className="editor-sidebar__toggle-sidebar">
-				<span>{ translate( 'Write' ) }</span>
-			</Button>
-		</div>
-	);
-}
+			</div>
+		);
+	}
+
+} );
 
 export default connect(
 	( state ) => {
