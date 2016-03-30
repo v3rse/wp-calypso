@@ -36,15 +36,13 @@ const EditorSidebarHeader = React.createClass( {
 		siteId: PropTypes.number,
 		allPostsUrl: PropTypes.string,
 		showDrafts: PropTypes.bool,
-		toggleDrafts: PropTypes.func,
-		toggleSidebar: PropTypes.func
+		toggleDrafts: PropTypes.func
 	},
 
 	getDefaultProps() {
 		return {
 			showDrafts: false,
-			toggleDrafts: noop,
-			toggleSidebar: noop
+			toggleDrafts: noop
 		};
 	},
 
@@ -90,11 +88,6 @@ const EditorSidebarHeader = React.createClass( {
 						<DraftsButton onClick={ this.props.toggleDrafts } />
 					</PostCountsData>
 				) }
-				<Button
-					onClick={ this.props.toggleSidebar }
-					className="editor-sidebar__toggle-sidebar">
-					<span>{ translate( 'Write' ) }</span>
-				</Button>
 			</div>
 		);
 	}
