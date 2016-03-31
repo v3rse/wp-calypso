@@ -292,6 +292,9 @@
 		"site": {
 			"test": [ "index", "utils" ]
 		},
+		"site-roles": {
+			"test": [ "store" ]
+		},
 		"store": {
 			"test": [ "index" ]
 		},
