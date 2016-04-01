@@ -107,7 +107,7 @@ export default React.createClass( {
 		const footerInfo = [];
 		if ( this.props.summary && this.props.path === 'searchterms' ) {
 			footerInfo.push(
-				<div className="module-content-text" key="nudge">
+				<div className="module-content-text nudge" key="nudge">
 					<UpgradeNudge
 						title="Google Analytics is included in our Premium Plan"
 						message="Upgrade to Premium for Google Analytics integration, custom domain and other power features"
