@@ -5,7 +5,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import assign from 'lodash/assign';
-import debugFactory from 'debug';
 
 /**
  * Internal dependencies
@@ -14,18 +13,24 @@ import Site from 'my-sites/site';
 import Card from 'components/card';
 import Button from 'components/button';
 import Gridicon from 'components/gridicon';
-import layoutFocus from 'lib/layout-focus';
 import * as PreviewActions from 'state/preview/actions';
-import designToolsById from './design-tools';
 import accept from 'lib/accept';
 import DesignToolData from 'my-sites/design-menu/design-tool-data';
+import DesignToolList from 'my-sites/design-tool-list';
 import SiteTitleControl from 'my-sites/site-title';
+import HeaderImageControl from 'my-sites/header-image';
+import HomePageSettings from 'my-sites/home-page-settings';
 
-const debug = debugFactory( 'calypso:design-menu' );
+const designToolsById = {
+	siteTitle: SiteTitleControl,
+	headerImage: HeaderImageControl,
+	homePage: HomePageSettings,
+};
 
 const DesignMenu = React.createClass( {
 
 	propTypes: {
+		// These are provided by the connect method
 		state: React.PropTypes.object.isRequired,
 		isSaved: React.PropTypes.bool,
 		customizations: React.PropTypes.object,
@@ -42,7 +47,8 @@ const DesignMenu = React.createClass( {
 
 	getInitialState() {
 		return {
-			activeControl: null,
+			activeDesignTool: null,
+			activePreviewDataKey: null,
 		};
 	},
 
@@ -52,12 +58,30 @@ const DesignMenu = React.createClass( {
 		this.props.actions.fetchPreviewMarkup( this.props.selectedSite.ID, '' );
 	},
 
-	enterControl( id ) {
-		this.setState( { activeControl: id } );
+	getDesignTools() {
+		return [
+			{
+				label: this.translate( 'Site Title and Tagline' ),
+				value: 'siteTitle',
+			},
+			{
+				label: this.translate( 'Header Image' ),
+				value: 'headerImage',
+			},
+			{
+				label: this.translate( 'Homepage Settings' ),
+				value: 'homePage',
+			},
+		];
 	},
 
-	enterDefaultControl() {
-		this.enterControl( null );
+	activateDesignTool( id ) {
+		const activeDesignTool = designToolsById[ id ];
+		this.setState( { activeDesignTool, activePreviewDataKey: id } );
+	},
+
+	activateDefaultDesignTool() {
+		this.setState( { activeDesignTool: null, activePreviewDataKey: null } );
 	},
 
 	onSave() {
@@ -65,74 +89,42 @@ const DesignMenu = React.createClass( {
 	},
 
 	onBack() {
-		if ( this.state.activeControl ) {
-			const activeControl = designToolsById[ this.state.activeControl ];
-			if ( activeControl && activeControl.parentId ) {
-				return this.enterControl( this.state.activeControl );
-			}
-			return this.enterDefaultControl();
+		if ( this.state.activeDesignTool ) {
+			return this.activateDefaultDesignTool();
 		}
+		this.maybeCloseDesignMenu();
+	},
+
+	maybeCloseDesignMenu() {
 		if ( ! this.props.isSaved ) {
 			return accept( this.translate( 'You have unsaved changes. Are you sure you want to close the preview?' ), accepted => {
 				if ( accepted ) {
 					this.props.actions.clearCustomizations( this.props.selectedSite.ID );
-					layoutFocus.set( 'sidebar' );
+					this.closeDesignMenu();
 				}
 			} );
 		}
 		this.props.actions.clearCustomizations( this.props.selectedSite.ID );
-		layoutFocus.set( 'sidebar' );
+		this.closeDesignMenu();
 	},
 
-	renderDesignTool( id, componentClass, props = {} ) {
-		debug( 'rendering design tool', id );
-		return React.createElement( componentClass, assign( props, {
-			activateControl: this.enterControl,
-			onChange: this.buildOnChangeFor( id ),
-		} ) );
+	closeDesignMenu() {
+		// TODO: go where?
 	},
 
-	buildOnChangeFor( id ) {
-		return customizations => {
-			debug( 'changing customizations for', id, customizations );
-			const newCustomizations = assign( {}, this.props.customizations, { [ id ]: assign( {}, this.props.customizations[ id ], customizations ) } );
-			debug( 'changed customizations to', newCustomizations );
-			return this.props.actions.updateCustomizations( this.props.selectedSite.ID, newCustomizations );
+	renderActiveDesignTool() {
+		return React.createElement( this.state.activeDesignTool );
+	},
+
+	renderDesignTool() {
+		if ( ! this.state.activeDesignTool ) {
+			return <DesignToolList tools={ this.getDesignTools() } onChange={ this.activateDesignTool } />;
 		}
-	},
-
-	getPropsForDesignTool( config ) {
-		if ( config.mapStateToProps ) {
-			return config.mapStateToProps( this.props.state );
-		}
-		return {};
-	},
-
-	getTopLevelDesignTools() {
-		return Object.keys( designToolsById )
-		.filter( id => ! designToolsById[ id ].parentId )
-		.filter( id => id !== 'default' )
-		.map( id => ( { id, title: designToolsById[ id ].title } ) );
-	},
-
-	renderDesignTools() {
 		return (
-			<DesignToolData previewDataKey="siteTitle" >
-				<SiteTitleControl />
+			<DesignToolData previewDataKey={ this.state.activePreviewDataKey } >
+				{ this.renderActiveDesignTool() }
 			</DesignToolData>
 		);
-		if ( this.state.activeControl ) {
-			const config = designToolsById[ this.state.activeControl ];
-			if ( config ) {
-				// allow each design tool to configure its own state
-				return this.renderDesignTool( this.state.activeControl, config.componentClass, this.getPropsForDesignTool( config ) );
-			}
-		}
-		if ( ! designToolsById.default ) {
-			throw new Error( 'No default design tool found.' );
-		}
-		const controls = this.getTopLevelDesignTools() || [];
-		return this.renderDesignTool( 'default', designToolsById.default.componentClass, { controls } );
 	},
 
 	renderSiteCard() {
@@ -159,7 +151,7 @@ const DesignMenu = React.createClass( {
 						<Button primary compact disabled={ this.props.isSaved } className="design-menu__save" onClick={ this.onSave } >{ saveButtonText }</Button>
 					</Card>
 				</span>
-				{ this.renderDesignTools() }
+				{ this.renderDesignTool() }
 			</div>
 		);
 	}

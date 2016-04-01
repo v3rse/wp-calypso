@@ -17,20 +17,20 @@ const ControlButton = props => (
 
 const DesignToolList = React.createClass( {
 	propTypes: {
-		activateControl: React.PropTypes.func.isRequired,
-		controls: React.PropTypes.arrayOf( React.PropTypes.shape( {
-			id: React.PropTypes.string.isRequired,
-			title: React.PropTypes.string.isRequired,
+		onChange: React.PropTypes.func.isRequired,
+		tools: React.PropTypes.arrayOf( React.PropTypes.shape( {
+			value: React.PropTypes.string.isRequired,
+			label: React.PropTypes.string.isRequired,
 		} ) ),
 	},
 
 	renderAllControls() {
-		return this.props.controls.map( this.renderControl );
+		return this.props.tools.map( this.renderControl );
 	},
 
-	renderControl( control ) {
-		const activateControl = () => this.props.activateControl( control.id );
-		return <ControlButton key={ control.id } title={ control.title } onClick={ activateControl } />;
+	renderControl( tool ) {
+		const onChange = () => this.props.onChange( tool.value )
+		return <ControlButton key={ tool.value } title={ tool.label } onClick={ onChange } />;
 	},
 
 	render() {

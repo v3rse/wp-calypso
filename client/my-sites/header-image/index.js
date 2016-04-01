@@ -2,10 +2,13 @@
  * External dependencies
  */
 import React from 'react';
+import { connect } from 'react-redux';
+import get from 'lodash/get';
 
 /**
  * Internal dependencies
  */
+import { getSelectedSite } from 'state/ui/selectors';
 import FormFieldset from 'components/forms/form-fieldset';
 import FormLabel from 'components/forms/form-label';
 import ImagePreloader from 'components/image-preloader';
@@ -21,12 +24,15 @@ const HeaderImageControl = React.createClass( {
 	},
 
 	getInitialState() {
+		const { headerImageUrl } = this.props;
 		return {
 			isShowingMedia: false,
+			headerImageUrl: headerImageUrl,
 		};
 	},
 
 	onClickHide() {
+		this.setState( { headerImageUrl: null } );
 		this.props.onChange( { headerImageUrl: null, headerImagePostId: null } );
 	},
 
@@ -37,7 +43,9 @@ const HeaderImageControl = React.createClass( {
 	setImage( selectedItems ) {
 		if ( selectedItems && selectedItems.length ) {
 			const newImage = selectedItems[0];
+			this.setState( { headerImageUrl: newImage.URL, isShowingMedia: false } );
 			this.props.onChange( { headerImageUrl: newImage.URL, headerImagePostId: newImage.ID, headerImageWidth: newImage.width, headerImageHeight: newImage.height } );
+			return;
 		}
 		this.setState( { isShowingMedia: false } );
 	},
@@ -51,8 +59,8 @@ const HeaderImageControl = React.createClass( {
 	},
 
 	renderImage() {
-		if ( this.props.headerImageUrl ) {
-			return <ImagePreloader placeholder={ this.renderPlaceholder() } src={ this.props.headerImageUrl } />;
+		if ( this.state.headerImageUrl ) {
+			return <ImagePreloader placeholder={ this.renderPlaceholder() } src={ this.state.headerImageUrl } />;
 		}
 		return this.renderNoImage();
 	},
@@ -61,7 +69,7 @@ const HeaderImageControl = React.createClass( {
 		const buttons = [
 			<Button key="header-image-add" onClick={ this.onClickAdd }>{ this.translate( 'Add new image' ) }</Button>
 		];
-		if ( this.props.headerImageUrl ) {
+		if ( this.state.headerImageUrl ) {
 			buttons.unshift(
 				<Button key="header-image-hide" onClick={ this.onClickHide } >{ this.translate( 'Hide image' ) }</Button>
 			);
@@ -101,4 +109,13 @@ const HeaderImageControl = React.createClass( {
 	}
 } );
 
-export default HeaderImageControl;
+function mapStateToProps( state, ownProps ) {
+	const selectedSite = getSelectedSite( state ) || {}
+	const headerImagePostId = ownProps.headerImagePostId || get( selectedSite, 'options.header_image.attachment_id' );
+	const headerImageUrl = ownProps.headerImageUrl || get( selectedSite, 'options.header_image.url' );
+	const headerImageWidth = ownProps.headerImageWidth || get( selectedSite, 'options.header_image.width' );
+	const headerImageHeight = ownProps.headerImageHeight || get( selectedSite, 'options.header_image.height' );
+	return { site: selectedSite, headerImagePostId, headerImageUrl, headerImageWidth, headerImageHeight };
+}
+
+export default connect( mapStateToProps )( HeaderImageControl );

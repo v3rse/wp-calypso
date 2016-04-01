@@ -35,11 +35,17 @@ const DesignToolData = React.createClass( {
 		}
 	},
 
+	getDefaultChildProps() {
+		return {
+			onChange: this.buildOnChangeFor( this.props.previewDataKey ),
+		};
+	},
+
 	getChildProps() {
 		if ( this.props.customizations && this.props.customizations[ this.props.previewDataKey ] ) {
-			return assign( {}, this.props.customizations[ this.props.previewDataKey ], { onChange: this.buildOnChangeFor( this.props.previewDataKey ) } );
+			return assign( {}, this.props.customizations[ this.props.previewDataKey ], this.getDefaultChildProps() );
 		}
-		return { onChange: this.buildOnChangeFor( this.props.previewDataKey ) };
+		return this.getDefaultChildProps();
 	},
 
 	render() {

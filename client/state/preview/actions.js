@@ -9,6 +9,7 @@ import wpcom from 'lib/wp';
  */
 import * as ActionTypes from 'state/action-types';
 import * as customizationSaveFunctions from './save-functions';
+import { requestSitePosts } from 'state/posts/actions';
 
 const debug = debugFactory( 'calypso:preivew-actions' );
 
@@ -86,8 +87,14 @@ export function createHomePage() {
 		wpcom.site( siteId ).addPost( { type: 'page', title: 'Home', content: '<h1>Welcome!</h1>' } )
 		.then( post => {
 			debug( 'home page successfully created!', post );
+			debug( 'setting home page preview setting to replace existing setting', customizations.homePage );
+			if ( ! customizations.homePage ) {
+				customizations.homePage = { isPageOnFront: true };
+			}
 			customizations.homePage.pageOnFrontId = post.ID;
 			dispatch( updateCustomizations( siteId, { homePage: customizations.homePage } ) );
+			debug( 'refreshing page list for new home page' );
+			dispatch( requestSitePosts( siteId, { type: 'page' } ) );
 		} );
 	}
 }

@@ -10,15 +10,18 @@ import { bindActionCreators } from 'redux';
 /**
  * Internal dependencies
  */
+import { getSelectedSite } from 'state/ui/selectors';
 import Card from 'components/card';
 import PostSelector from 'my-sites/post-selector';
 import FormFieldset from 'components/forms/form-fieldset';
 import FormLegend from 'components/forms/form-legend';
 import FormLabel from 'components/forms/form-label';
 import * as PreviewActions from 'state/preview/actions';
+import { requestSitePosts } from 'state/posts/actions';
 
 const HomePageSettings = React.createClass( {
 	propTypes: {
+		pages: React.PropTypes.array.isRequired,
 		site: React.PropTypes.object.isRequired,
 		isPageOnFront: React.PropTypes.bool,
 		pageOnFrontId: React.PropTypes.number,
@@ -29,33 +32,51 @@ const HomePageSettings = React.createClass( {
 
 	getDefaultProps() {
 		return {
-			isPageOnFront: false,
 			onChange: noop,
 		};
 	},
 
 	getInitialState() {
-		return {
-			isPageOnFront: this.props.isPageOnFront,
-			pageOnFrontId: this.props.pageOnFrontId,
-		};
+		return this.getStateForProps( this.props );
+	},
+
+	componentWillMount() {
+		this.props.actions.requestSitePosts( this.props.site.ID, { type: 'page' } );
 	},
 
 	componentWillReceiveProps( nextProps ) {
-		this.setState( { isPageOnFront: nextProps.isPageOnFront, pageOnFrontId: nextProps.pageOnFrontId } );
+		this.setState( this.getStateForProps( nextProps ) );
+	},
+
+	getStateForProps( props ) {
+		return {
+			isPageOnFront: props.isPageOnFront,
+			pageOnFrontId: props.pageOnFrontId,
+		};
 	},
 
 	createHomePage() {
 		this.props.actions.createHomePage();
 	},
 
-	handleChangeIsPageOnFront( isPageOnFront ) {
-		const pageOnFrontId = this.state.pageOnFrontId;
-		this.setState( { isPageOnFront } );
-		this.props.onChange( { isPageOnFront, pageOnFrontId } );
-		if ( isPageOnFront && ! pageOnFrontId ) {
-			this.createHomePage();
+	getDefaultPageId() {
+		const homePages = this.props.pages.filter( page => page.title === 'Home' );
+		if ( homePages.length > 0 ) {
+			return homePages[0].ID;
 		}
+		return null;
+	},
+
+	handleChangeIsPageOnFront( isPageOnFront ) {
+		let pageOnFrontId = this.state.pageOnFrontId;
+		if ( isPageOnFront && ! pageOnFrontId ) {
+			pageOnFrontId = this.getDefaultPageId();
+			if ( ! pageOnFrontId ) {
+				this.createHomePage();
+			}
+		}
+		this.setState( { isPageOnFront, pageOnFrontId } );
+		this.props.onChange( { isPageOnFront, pageOnFrontId } );
 	},
 
 	handleChangePageOnFront( post ) {
@@ -130,13 +151,23 @@ const HomePageSettings = React.createClass( {
 	}
 } );
 
-function mapStateToProps() {
-	return {};
+function mapStateToProps( state, ownProps ) {
+	const selectedSite = getSelectedSite( state ) || {}
+	const pages = Object.keys( state.posts.items )
+	.map( key => state.posts.items[ key ] )
+	.filter( post => post.type === 'page' );
+	const isPageOnFront = ownProps.hasOwnProperty( 'isPageOnFront' ) ? ownProps.isPageOnFront : selectedSite.options.show_on_front === 'page';
+	const pageOnFrontId = ownProps.pageOnFrontId || selectedSite.options.page_on_front;
+	const pageForPostsId = ownProps.pageForPostsId || selectedSite.options.page_for_posts;
+	return { pages, site: selectedSite, isPageOnFront, pageOnFrontId, pageForPostsId };
 }
 
 function mapDispatchToProps( dispatch ) {
 	return {
-		actions: bindActionCreators( { createHomePage: PreviewActions.createHomePage }, dispatch )
+		actions: bindActionCreators( {
+			createHomePage: PreviewActions.createHomePage,
+			requestSitePosts,
+		}, dispatch )
 	};
 }
 

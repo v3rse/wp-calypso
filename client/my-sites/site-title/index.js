@@ -15,7 +15,6 @@ import FormTextInput from 'components/forms/form-text-input';
 
 const SiteTitleControl = React.createClass( {
 	propTypes: {
-		defaults: React.PropTypes.object,
 		blogname: React.PropTypes.string,
 		blogdescription: React.PropTypes.string,
 		onChange: React.PropTypes.func,
@@ -30,10 +29,10 @@ const SiteTitleControl = React.createClass( {
 	},
 
 	getInitialState() {
-		const { blogname, blogdescription, defaults } = this.props;
+		const { blogname, blogdescription } = this.props;
 		return {
-			blogname: blogname || defaults.blogname,
-			blogdescription: blogdescription || defaults.blogdescription,
+			blogname: blogname,
+			blogdescription: blogdescription,
 		};
 	},
 
@@ -71,9 +70,9 @@ const SiteTitleControl = React.createClass( {
 	}
 } );
 
-function mapStateToProps( state ) {
+function mapStateToProps( state, ownProps ) {
 	const selectedSite = getSelectedSite( state ) || {}
-	return { defaults: { blogname: selectedSite.name, blogdescription: selectedSite.description } };
+	return { blogname: ownProps.blogname || selectedSite.name, blogdescription: ownProps.blogdescription || selectedSite.description };
 }
 
 export default connect( mapStateToProps )( SiteTitleControl );
