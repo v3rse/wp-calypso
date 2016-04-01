@@ -11,15 +11,15 @@ import omitBy from 'lodash/omitBy';
  * Internal dependencies
  */
 import resize from 'lib/resize-image-url';
-import Constants from './constants';
+import {
+	MimeTypes,
+	VideoPressFileTypes,
+	ThumbnailSizeDimensions,
+	GalleryColumnedTypes,
+	GallerySizeableTypes,
+	GalleryDefaultAttrs
+} from './constants';
 import Shortcode from 'lib/shortcode';
-
-const MimeTypes = Constants.MimeTypes,
-	VideoPressFileTypes = Constants.VideoPressFileTypes,
-	ThumbnailSizeDimensions = Constants.ThumbnailSizeDimensions,
-	GalleryColumnedTypes = Constants.GalleryColumnedTypes,
-	GallerySizeableTypes = Constants.GallerySizeableTypes,
-	GalleryDefaultAttrs = Constants.GalleryDefaultAttrs;
 
 /**
  * Module variables
