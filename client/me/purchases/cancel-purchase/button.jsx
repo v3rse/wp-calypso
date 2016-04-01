@@ -7,12 +7,17 @@ import React from 'react';
 /**
  * Internal Dependencies
  */
+import analytics from 'analytics';
 import Button from 'components/button';
 import { cancelPurchase } from 'lib/upgrades/actions';
+import Dialog from 'components/dialog';
 import { getName, getSubscriptionEndDate, isOneTimePurchase, isRefundable, isSubscription } from 'lib/purchases';
 import { isDomainRegistration } from 'lib/products-values';
 import notices from 'notices';
 import paths from 'me/purchases/paths';
+import wp from 'lib/wp';
+
+const wpcom = wp.undocumented();
 
 const CancelPurchaseButton = React.createClass( {
 	propTypes: {
@@ -24,6 +29,70 @@ const CancelPurchaseButton = React.createClass( {
 		return {
 			disabled: false
 		};
+	},
+
+	handleCancelPurchaseClick() {
+		if ( isDomainRegistration( this.props.purchase ) ) {
+			return this.goToCancelConfirmation();
+		}
+
+		this.setState( {
+			showDialog: true
+		} );
+	},
+
+	closeDialog( action ) {
+		if ( action === 'delete' ) {
+			this.setState( {
+				submitting: true
+			} );
+
+			return this.submitCancelPurchase();
+		}
+
+		this.setState( {
+			showDialog: false
+		} );
+	},
+
+	renderCancelConfirmationDialog() {
+		const { domain, priceText } = this.props.purchase,
+			purchaseName = getName( this.props.purchase ),
+			buttons = [
+				{ action: 'cancel', label: this.translate( "No, I'll Keep It" ) },
+				{ action: 'delete', label: this.translate( 'Yes, Cancel Now' ), isPrimary: true, disabled: this.state.submitting },
+			];
+
+		return (
+			<Dialog
+				isVisible={ this.state.showDialog }
+				buttons={ buttons }
+				onClose={ this.closeDialog }
+				className="cancel-purchase-button__warning-dialog">
+				<h1>
+					{ this.translate( 'Cancel %(purchaseName)s', {
+						args: {
+							purchaseName
+						}
+					} ) }
+				</h1>
+				<p>
+					{ this.translate(
+						'Are you sure you want to cancel and remove %(purchaseName)s from {{em}}%(domain)s{{/em}}? ' +
+						'All plan features and custom changes will be removed from your site and you will be refunded %(priceText)s.', {
+							args: {
+								purchaseName,
+								domain,
+								priceText
+							},
+							components: {
+								em: <em />
+							}
+						}
+					) }
+				</p>
+			</Dialog>
+		);
 	},
 
 	goToCancelConfirmation() {
@@ -74,13 +143,35 @@ const CancelPurchaseButton = React.createClass( {
 		} );
 	},
 
+	handleSubmit( error, response ) {
+		if ( error ) {
+			notices.error( error.message );
+			return;
+		}
+
+		notices.success( response.message, { persistent: true } );
+
+		analytics.tracks.recordEvent(
+			'calypso_purchases_cancel_form_submit',
+			{ product_slug: this.props.purchase.productSlug }
+		);
+
+		page.redirect( paths.list() );
+	},
+
+	submitCancelPurchase() {
+		wpcom.cancelAndRefundPurchase( this.props.purchase.id, null, ( error, response ) => {
+			return this.handleSubmit( error || null, response );
+		} );
+	},
+
 	render() {
 		const { purchase } = this.props;
 
 		let text, onClick;
 
 		if ( isRefundable( purchase ) ) {
-			onClick = this.goToCancelConfirmation;
+			onClick = this.handleCancelPurchaseClick;
 
 			if ( isDomainRegistration( purchase ) ) {
 				text = this.translate( 'Cancel Domain and Refund' );
@@ -106,13 +197,17 @@ const CancelPurchaseButton = React.createClass( {
 		}
 
 		return (
-			<Button
-				className="cancel-purchase__button"
-				disabled={ this.state.disabled }
-				onClick={ onClick }
-				primary>
-				{ text }
-			</Button>
+			<div>
+				<Button
+					className="cancel-purchase__button"
+					disabled={ this.state.disabled }
+					onClick={ onClick }
+					primary>
+					{ text }
+				</Button>
+				{ this.renderCancelConfirmationDialog() }
+			</div>
+
 		);
 	}
 } );
