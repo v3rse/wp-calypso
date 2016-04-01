@@ -1,19 +1,20 @@
 /**
  * External dependencies
  */
-const url = require( 'url' ),
-	path = require( 'path' ),
-	photon = require( 'photon' ),
-	includes = require( 'lodash/includes' ),
-	omitBy = require( 'lodash/omitBy' );
+import url from 'url';
+import path from 'path';
+import photon from 'photon';
+import includes from 'lodash/includes';
+import omitBy from 'lodash/omitBy';
 
 /**
  * Internal dependencies
  */
-const resize = require( 'lib/resize-image-url' ),
-	Constants = require( './constants' ),
-	Shortcode = require( 'lib/shortcode' ),
-	MimeTypes = Constants.MimeTypes,
+import resize from 'lib/resize-image-url';
+import Constants from './constants';
+import Shortcode from 'lib/shortcode';
+
+const MimeTypes = Constants.MimeTypes,
 	VideoPressFileTypes = Constants.VideoPressFileTypes,
 	ThumbnailSizeDimensions = Constants.ThumbnailSizeDimensions,
 	GalleryColumnedTypes = Constants.GalleryColumnedTypes,
