@@ -1,17 +1,17 @@
 /**
  * External dependencies
  */
-const ReactDom = require( 'react-dom' ),
-	React = require( 'react' ),
-	noop = require( 'lodash/noop' ),
-	classNames = require( 'classnames' );
+import ReactDom from 'react-dom';
+import React from 'react';
+import noop from 'lodash/noop';
+import classNames from 'classnames';
 
 /**
  * Internal dependencies
  */
-const analytics = require( 'analytics' ),
-	MediaActions = require( 'lib/media/actions' ),
-	MediaUtils = require( 'lib/media/utils' );
+import analytics from 'analytics';
+import MediaActions from 'lib/media/actions';
+import MediaUtils from 'lib/media/utils';
 import uniq from 'lodash/uniq';
 import { VideoPressFileTypes } from 'lib/media/constants';
 
