@@ -137,7 +137,6 @@ Layout = React.createClass( {
 	},
 
 	render: function() {
-		console.log( 'should show guides tour', this.props.shouldShowGuidesTour );
 		var sectionClass = classnames(
 				'wp',
 				'layout',
@@ -154,7 +153,7 @@ Layout = React.createClass( {
 
 		return (
 			<div className={ sectionClass }>
-				{ config.isEnabled( 'guidestours' ) ? <GuidesTours /> : null }
+				{ config.isEnabled( 'guidestours' ) && this.props.shouldShowGuidesTour ? <GuidesTours /> : null }
 				{ config.isEnabled( 'keyboard-shortcuts' ) ? <KeyboardShortcutsMenu /> : null }
 				{ this.renderMasterbar() }
 				{ config.isEnabled( 'support-user' ) && <SupportUser /> }
