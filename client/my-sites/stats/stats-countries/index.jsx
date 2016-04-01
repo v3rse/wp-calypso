@@ -112,8 +112,8 @@ export default React.createClass( {
 			footerInfo.push(
 				<div className="module-content-text nudge" key="nudge">
 					<UpgradeNudge
-						title="Google Analytics is included in our Premium Plan"
-						message="Upgrade to Premium for Google Analytics integration, custom domain and other power features"
+						title="Add Google Analytics"
+						message="Upgrade to Premium for Google Analytics integration."
 						event="googleAnalytics-stats-countries"
 						feature="google-analytics"
 						icon="stats"
