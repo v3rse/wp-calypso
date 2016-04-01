@@ -1,24 +1,24 @@
 /**
  * External dependencies
  */
-const React = require( 'react' ),
-	classNames = require( 'classnames' );
+import React from 'react';
+import classNames from 'classnames';
 
 /**
  * Internal dependencies
  */
-const toggle = require( '../mixin-toggle' ),
-	Geochart = require( '../geochart' ),
-	StatsList = require( '../stats-list' ),
-	observe = require( 'lib/mixins/data-observe' ),
-	skeleton = require( '../mixin-skeleton' ),
-	DownloadCsv = require( '../stats-download-csv' ),
-	DatePicker = require( '../stats-date-picker' ),
-	ErrorPanel = require( '../stats-error' ),
-	Card = require( 'components/card' ),
-	StatsModulePlaceholder = require( '../stats-module/placeholder' ),
-	StatsListLegend = require( '../stats-list/legend' ),
-	Gridicon = require( 'components/gridicon' );
+import toggle from '../mixin-toggle';
+import Geochart from '../geochart';
+import StatsList from '../stats-list';
+import observe from 'lib/mixins/data-observe';
+import skeleton from '../mixin-skeleton';
+import DownloadCsv from '../stats-download-csv';
+import DatePicker from '../stats-date-picker';
+import ErrorPanel from '../stats-error';
+import Card from 'components/card';
+import StatsModulePlaceholder from '../stats-module/placeholder';
+import StatsListLegend from '../stats-list/legend';
+import Gridicon from 'components/gridicon';
 import UpgradeNudge from 'my-sites/upgrade-nudge';
 
 export default React.createClass( {
