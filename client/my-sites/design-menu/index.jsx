@@ -18,6 +18,8 @@ import layoutFocus from 'lib/layout-focus';
 import * as PreviewActions from 'state/preview/actions';
 import designToolsById from './design-tools';
 import accept from 'lib/accept';
+import DesignToolData from 'my-sites/design-menu/design-tool-data';
+import SiteTitleControl from 'my-sites/site-title';
 
 const debug = debugFactory( 'calypso:design-menu' );
 
@@ -106,7 +108,19 @@ const DesignMenu = React.createClass( {
 		return {};
 	},
 
+	getTopLevelDesignTools() {
+		return Object.keys( designToolsById )
+		.filter( id => ! designToolsById[ id ].parentId )
+		.filter( id => id !== 'default' )
+		.map( id => ( { id, title: designToolsById[ id ].title } ) );
+	},
+
 	renderDesignTools() {
+		return (
+			<DesignToolData previewDataKey="siteTitle" >
+				<SiteTitleControl />
+			</DesignToolData>
+		);
 		if ( this.state.activeControl ) {
 			const config = designToolsById[ this.state.activeControl ];
 			if ( config ) {
@@ -121,20 +135,17 @@ const DesignMenu = React.createClass( {
 		return this.renderDesignTool( 'default', designToolsById.default.componentClass, { controls } );
 	},
 
-	getTopLevelDesignTools() {
-		return Object.keys( designToolsById )
-		.filter( id => ! designToolsById[ id ].parentId )
-		.filter( id => id !== 'default' )
-		.map( id => ( { id, title: designToolsById[ id ].title } ) );
-	},
-
-	render() {
+	renderSiteCard() {
 		// The site object required by Site isn't quite the same as the one in the
 		// Redux store, so we patch it.
 		const site = assign( {}, this.props.selectedSite, {
 			title: this.props.selectedSite.name,
 			domain: this.props.selectedSite.URL.replace( /^https?:\/\//, '' ),
 		} );
+		return <Site site={ site } />;
+	},
+
+	render() {
 		const saveButtonText = this.props.isSaved ? this.translate( 'Saved' ) : this.translate( 'Publish Changes' );
 		return (
 			<div className="design-menu">
@@ -143,7 +154,7 @@ const DesignMenu = React.createClass( {
 						<Gridicon icon="arrow-left" size={ 18 } />
 						{ this.translate( 'Back' ) }
 					</Button>
-					<Site site={ site } />
+					{ this.renderSiteCard() }
 					<Card className="design-menu__header-buttons">
 						<Button primary compact disabled={ this.props.isSaved } className="design-menu__save" onClick={ this.onSave } >{ saveButtonText }</Button>
 					</Card>

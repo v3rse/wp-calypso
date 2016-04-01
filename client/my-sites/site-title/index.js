@@ -2,33 +2,38 @@
  * External dependencies
  */
 import React from 'react';
+import { connect } from 'react-redux';
+import noop from 'lodash/noop';
 
 /**
  * Internal dependencies
  */
+import { getSelectedSite } from 'state/ui/selectors';
 import FormFieldset from 'components/forms/form-fieldset';
 import FormLabel from 'components/forms/form-label';
 import FormTextInput from 'components/forms/form-text-input';
 
 const SiteTitleControl = React.createClass( {
 	propTypes: {
+		defaults: React.PropTypes.object,
 		blogname: React.PropTypes.string,
 		blogdescription: React.PropTypes.string,
-		onChange: React.PropTypes.func.isRequired,
+		onChange: React.PropTypes.func,
 	},
 
 	getDefaultProps() {
 		return {
-			blogname: '',
-			blogdescription: '',
+			blogname: null,
+			blogdescription: null,
+			onChange: noop,
 		}
 	},
 
 	getInitialState() {
-		const { blogname, blogdescription } = this.props;
+		const { blogname, blogdescription, defaults } = this.props;
 		return {
-			blogname,
-			blogdescription,
+			blogname: blogname || defaults.blogname,
+			blogdescription: blogdescription || defaults.blogdescription,
 		};
 	},
 
@@ -66,4 +71,9 @@ const SiteTitleControl = React.createClass( {
 	}
 } );
 
-export default SiteTitleControl;
+function mapStateToProps( state ) {
+	const selectedSite = getSelectedSite( state ) || {}
+	return { defaults: { blogname: selectedSite.name, blogdescription: selectedSite.description } };
+}
+
+export default connect( mapStateToProps )( SiteTitleControl );
