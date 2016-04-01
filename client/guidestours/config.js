@@ -5,14 +5,14 @@ const config = {
 	},
 	'my-sites': {
 		target: 'my-sites',
-		type: 'bullseye',
+		type: 'GuidesActionStep',
 		placement: 'below',
 		text: `First things first. Up here, you'll find tools for managing your site's content and design.`,
 		next: 'reader'
 	},
 	reader: {
 		target: 'reader',
-		type: 'bullseye',
+		type: 'GuidesActionStep',
 		placement: 'beside',
 		text: `This is the Reader. It shows you fresh posts from other sites you're following.`,
 		next: 'finish'

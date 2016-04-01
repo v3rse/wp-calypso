@@ -68,14 +68,14 @@ class GuidesStep extends Component {
 
 	addTargetListener() {
 		const { target = false, onNext, type } = this.props;
-		if ( type === 'bullseye' && onNext && target.addEventListener ) {
+		if ( type === 'GuidesActionStep' && onNext && target.addEventListener ) {
 			target.addEventListener( 'click', onNext );
 		}
 	}
 
 	removeTargetListener() {
 		const { target = false, onNext, type } = this.props;
-		if ( type === 'bullseye' && onNext && target.removeEventListener ) {
+		if ( type === 'GuidesActionStep' && onNext && target.removeEventListener ) {
 			target.removeEventListener( 'click', onNext );
 		}
 	}
@@ -85,13 +85,17 @@ class GuidesStep extends Component {
 		return (
 			<Card className="guidestours__step" style={ style } >
 				<p>{ text }</p>
-				{ type !== 'bullseye' &&
+				{ type !== 'GuidesActionStep' &&
 					<Button onClick={ onNext } primary>Next</Button>
 				}
 				<Button onClick={ onQuit } secondary>Skip all</Button>
 			</Card>
 		);
 	}
+}
+
+class GuidesActionStep extends GuidesStep {
+
 }
 
 GuidesStep.propTypes = {
@@ -187,16 +191,25 @@ export default class GuidesTours extends Component {
 		const stepCoords = posToCss( dialog );
 		const pointerCoords = posToCss( bullseye );
 
+		var StepComponent = GuidesStep;
+		switch ( this.state.currentStep.type ) {
+			case 'GuidesActionStep':
+				StepComponent = GuidesActionStep;
+				break;
+			default:
+				StepComponent = GuidesStep;
+		}
+
 		return (
 			<div>
-				<GuidesStep
-						{ ...this.state.currentStep }
-						key={ this.state.target }
-						target={ this.currentTarget }
-						style={ stepCoords }
-						onNext={ this.next }
-						onQuit={ this.quit } />
-				{ this.state.currentStep.type === 'bullseye' &&
+				<StepComponent
+					{ ...this.state.currentStep }
+					key={ this.state.target }
+					target={ this.currentTarget }
+					style={ stepCoords }
+					onNext={ this.next }
+					onQuit={ this.quit } />
+				{ this.state.currentStep.type === 'GuidesActionStep' &&
 					<GuidesPointer style={ pointerCoords } />
 				}
 			</div>
