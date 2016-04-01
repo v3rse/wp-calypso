@@ -27,7 +27,7 @@ export default React.createClass( {
 		}
 		if ( this.props.noticeType === 'isDotCom' ) {
 			noticeValues.icon = 'block';
-			noticeValues.text = this.translate( 'That\'s is a WordPress.com site, so you don\'t need to connect it' );
+			noticeValues.text = this.translate( 'That is a WordPress.com site, so you don\'t need to connect it' );
 			return noticeValues;
 		}
 		if ( this.props.noticeType === 'notWordPress' ) {
