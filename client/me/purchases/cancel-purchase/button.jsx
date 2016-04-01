@@ -26,9 +26,7 @@ const CancelPurchaseButton = React.createClass( {
 	},
 
 	getInitialState() {
-		return {
-			disabled: false
-		};
+		return { disabled: false };
 	},
 
 	handleCancelPurchaseClick() {
@@ -36,31 +34,29 @@ const CancelPurchaseButton = React.createClass( {
 			return this.goToCancelConfirmation();
 		}
 
-		this.setState( {
-			showDialog: true
-		} );
+		this.setState( { showDialog: true } );
 	},
 
-	closeDialog( action ) {
-		if ( action === 'delete' ) {
-			this.setState( {
-				submitting: true
-			} );
-
-			return this.submitCancelPurchase();
-		}
-
-		this.setState( {
-			showDialog: false
-		} );
+	closeDialog() {
+		this.setState( { showDialog: false } );
 	},
 
 	renderCancelConfirmationDialog() {
 		const { domain, priceText } = this.props.purchase,
 			purchaseName = getName( this.props.purchase ),
 			buttons = [
-				{ action: 'cancel', label: this.translate( "No, I'll Keep It" ) },
-				{ action: 'delete', label: this.translate( 'Yes, Cancel Now' ), isPrimary: true, disabled: this.state.submitting },
+				{
+					action: 'hide',
+					label: this.translate( "No, I'll Keep It" ),
+					onClick: this.closeDialog
+				},
+				{
+					action: 'cancel',
+					label: this.translate( 'Yes, Cancel Now' ),
+					isPrimary: true,
+					disabled: this.state.submitting,
+					onClick: this.submitCancelPurchase
+				},
 			];
 
 		return (
@@ -160,6 +156,8 @@ const CancelPurchaseButton = React.createClass( {
 	},
 
 	submitCancelPurchase() {
+		this.setState( { submitting: true } );
+
 		wpcom.cancelAndRefundPurchase( this.props.purchase.id, null, ( error, response ) => {
 			return this.handleSubmit( error || null, response );
 		} );
