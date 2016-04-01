@@ -100,3 +100,17 @@ export function recordTrackForPost( eventName, post = {}, additionalProps = {} )
 		is_jetpack: post.is_jetpack
 	}, additionalProps ) );
 }
+
+export function pageViewForPost( blogId, blogUrl, postId, isPrivate ) {
+	let params = {
+		ref: 'http://wordpress.com/',
+		reader: 1,
+		host: blogUrl.replace( /.*?:\/\//g, '' ),
+		blog: blogId,
+		post: postId
+	};
+	if ( isPrivate ) {
+		params.priv = 1;
+	}
+	mc.bumpStatWithPageView( params );
+}
