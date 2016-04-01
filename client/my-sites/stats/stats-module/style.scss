@@ -352,8 +352,12 @@ ul.module-header-actions {
 	&.nudge {
 		text-align: center;
 		a, button {
-			margin-left: auto;
-			margin-right: auto;
+			width: 100%;
+			margin: 0 auto;
+
+			@include breakpoint( ">660px" ) {
+				max-width: 420px;
+			}
 		}
 	}
 }
