@@ -50,6 +50,19 @@ const bullseyePositioners = {
 };
 
 class GuidesStep extends Component {
+	render() {
+		const { text, style, onNext, onQuit } = this.props;
+		return (
+			<Card className="guidestours__step" style={ style } >
+				<p>{ text }</p>
+				<Button onClick={ onNext } primary>Next</Button>
+				<Button onClick={ onQuit } secondary>Skip all</Button>
+			</Card>
+		);
+	}
+}
+
+class GuidesActionStep extends GuidesStep {
 	componentDidMount() {
 		this.addTargetListener();
 	}
@@ -67,35 +80,30 @@ class GuidesStep extends Component {
 	}
 
 	addTargetListener() {
-		const { target = false, onNext, type } = this.props;
-		if ( type === 'GuidesActionStep' && onNext && target.addEventListener ) {
+		const { target = false, onNext } = this.props;
+		if ( onNext && target.addEventListener ) {
 			target.addEventListener( 'click', onNext );
 		}
 	}
 
 	removeTargetListener() {
-		const { target = false, onNext, type } = this.props;
-		if ( type === 'GuidesActionStep' && onNext && target.removeEventListener ) {
+		const { target = false, onNext } = this.props;
+		if ( onNext && target.removeEventListener ) {
 			target.removeEventListener( 'click', onNext );
 		}
 	}
 
 	render() {
-		const { text, type, style, onNext, onQuit } = this.props;
+		const { text, style, onQuit, pointerCoords } = this.props;
+
 		return (
 			<Card className="guidestours__step" style={ style } >
 				<p>{ text }</p>
-				{ type !== 'GuidesActionStep' &&
-					<Button onClick={ onNext } primary>Next</Button>
-				}
 				<Button onClick={ onQuit } secondary>Skip all</Button>
+				<GuidesPointer style={ pointerCoords } />
 			</Card>
 		);
 	}
-}
-
-class GuidesActionStep extends GuidesStep {
-
 }
 
 GuidesStep.propTypes = {
@@ -122,7 +130,6 @@ class GuidesPointer extends Component {
 
 GuidesPointer.propTypes = {
 	style: PropTypes.object.isRequired,
-	onNext: PropTypes.func.isRequired,
 };
 
 export default class GuidesTours extends Component {
@@ -204,14 +211,12 @@ export default class GuidesTours extends Component {
 			<div>
 				<StepComponent
 					{ ...this.state.currentStep }
+					pointerCoords={ pointerCoords }
 					key={ this.state.target }
 					target={ this.currentTarget }
 					style={ stepCoords }
 					onNext={ this.next }
 					onQuit={ this.quit } />
-				{ this.state.currentStep.type === 'GuidesActionStep' &&
-					<GuidesPointer style={ pointerCoords } />
-				}
 			</div>
 		);
 	}
