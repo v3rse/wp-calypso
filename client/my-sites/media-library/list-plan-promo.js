@@ -2,7 +2,8 @@
  * External dependencies
  */
 var React = require( 'react' ),
-	page = require( 'page' );
+	page = require( 'page' ),
+	analytics = require( 'analytics' );
 
 /**
  * Internal dependencies
@@ -51,6 +52,8 @@ module.exports = React.createClass( {
 
 	viewPlansPage: function() {
 		const { slug = '' } = this.props.site;
+
+		analytics.tracks.recordEvent( 'calypso_media_plans_button_click' );
 
 		page( `/plans/${ slug }` );
 	},
