@@ -138,6 +138,10 @@
 	&:nth-child(odd) {
 		background: $gray-light;
 	}
+
+	&.is-highlighted {
+		background: darken( $gray-light, 10% );
+	}
 }
 
 .plans-compare__cell-placeholder {
