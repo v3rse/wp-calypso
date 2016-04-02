@@ -15,9 +15,7 @@ import { getName, getSubscriptionEndDate, isOneTimePurchase, isRefundable, isSub
 import { isDomainRegistration } from 'lib/products-values';
 import notices from 'notices';
 import paths from 'me/purchases/paths';
-import wp from 'lib/wp';
-
-const wpcom = wp.undocumented();
+import { cancelAndRefundPurchase } from 'lib/upgrades/actions';
 
 const CancelPurchaseButton = React.createClass( {
 	propTypes: {
@@ -158,9 +156,7 @@ const CancelPurchaseButton = React.createClass( {
 	submitCancelPurchase() {
 		this.setState( { submitting: true } );
 
-		wpcom.cancelAndRefundPurchase( this.props.purchase.id, null, ( error, response ) => {
-			return this.handleSubmit( error || null, response );
-		} );
+		cancelAndRefundPurchase( this.props.purchase.id, null, this.handleSubmit );
 	},
 
 	render() {

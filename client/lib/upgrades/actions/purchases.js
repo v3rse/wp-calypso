@@ -18,6 +18,10 @@ const debug = debugFactory( 'calypso:upgrades:actions:purchases' ),
 const PURCHASES_FETCH_ERROR_MESSAGE = i18n.translate( 'There was an error retrieving purchases.' ),
 	PURCHASE_REMOVE_ERROR_MESSAGE = i18n.translate( 'There was an error removing the purchase.' );
 
+function cancelAndRefundPurchase( purchaseId, formData = null, onComplete ) {
+	wpcom.cancelAndRefundPurchase( purchaseId, formData, onComplete );
+}
+
 function cancelPurchase( purchaseId, onComplete ) {
 	wpcom.cancelPurchase( purchaseId, ( error, data ) => {
 		debug( error, data );
@@ -187,6 +191,7 @@ function removePurchase( purchaseId, userId, onComplete ) {
 }
 
 export {
+	cancelAndRefundPurchase,
 	cancelPurchase,
 	cancelPrivateRegistration,
 	clearPurchases,

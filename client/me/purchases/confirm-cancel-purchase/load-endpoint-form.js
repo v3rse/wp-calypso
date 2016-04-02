@@ -7,6 +7,7 @@ import toArray from 'lodash/toArray';
 /**
  * Internal Dependencies
  */
+import { cancelAndRefundPurchase } from 'lib/upgrades/actions';
 import wp from 'lib/wp';
 
 const wpcom = wp.undocumented();
@@ -55,7 +56,7 @@ function submitForm( { form, onSubmit, selectedPurchase, selectedSite } ) {
 
 	button.disabled = true;
 
-	wpcom.cancelAndRefundPurchase( selectedPurchase.id, formData, ( error, response ) => {
+	cancelAndRefundPurchase( selectedPurchase.id, formData, ( error, response ) => {
 		if ( error ) {
 			button.disabled = false;
 			onSubmit( error );
