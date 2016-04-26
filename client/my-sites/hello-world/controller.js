@@ -1,8 +1,15 @@
-var React = require('react'); //External Dependencies
+var React = require( 'react' ),
+    ReactDom = require( 'react-dom' ); //External Dependencies
 
 const Controller = {
   helloWorld() {
-    console.log('Hello, world?!!');
+    const Main = require( 'my-sites/hello-world/main' );
+
+    // Render hello world..
+    ReactDom.render(
+      React.createElement( Main ),
+      document.getElementById( 'primary' )
+    );
   }
 }
 
