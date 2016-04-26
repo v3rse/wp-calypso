@@ -34,6 +34,7 @@
 		"devdocs": true,
 		"devdocs/redirect-loggedout-homepage": true,
 		"help": true,
+		"hello-world": true,
 		"jetpack/calypso-first-signup-flow": true,
 		"jetpack_core_inline_update": true,
 		"keyboard-shortcuts": true,

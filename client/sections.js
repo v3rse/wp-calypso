@@ -292,4 +292,12 @@ if ( config.isEnabled( 'manage/custom-post-types' ) ) {
 	} );
 }
 
+if ( config.isEnabled( 'manage/custom-post-types' ) ) {
+	sections.push( {
+		name: 'hello-world',
+		paths: ['/hello-world'],
+		module: 'my-sites/hello-world'
+	} );
+}
+
 module.exports = sections;
